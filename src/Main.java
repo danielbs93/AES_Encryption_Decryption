@@ -33,17 +33,17 @@ public class Main {
                 readData(Key_Path,InputMassagePath,OutputMassagePath);
                 //Encryption
                 if (args[0].equals(Encrypt_Instruction)) {
-
+                    Encryptor encryptor = new Encryptor();
                 } else
                 //Decryption
                 if (args[0].equals(Decrypt_Instruction)) {
-
+                    Decryptor decryptor = new Decryptor();
                 }
             }
             else
             //Breaking
             if (args[0].equals(Break_Instruction)) {
-
+                Breaker breaker = new Breaker();
             }
             else //illegal input
                 throw new Exception();
