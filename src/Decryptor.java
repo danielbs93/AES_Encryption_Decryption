@@ -1,18 +1,45 @@
+import java.util.ArrayList;
+
 public class Decryptor {
 
     //Fields
-    private static Byte [][] key1;
-    private static Byte [][] key2;
-    private static Byte [][] key3;
-//        private static Byte [][] PlainText;
+    private Byte [][] key1;
+    private Byte [][] key2;
+    private Byte [][] key3;
+    private ArrayList<Byte [][]> CypherText;
 
-    public Decryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, Byte[][] message) {
+    public Decryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
         this.key1 = k1;
         this.key2 = k2;
         this.key3 = k3;
-//        this.PlainText = message;
+        this.CypherText = message;
+
     }
 
+    public ArrayList<Byte[][]> decrypt() {
+        ArrayList<Byte[][]> PlainText = new ArrayList<>();
+        //first iteration
+        PlainText = iteration(key3, CypherText);
+        //second iteration
+        PlainText = iteration(key2, PlainText);
+        //third iteration
+        PlainText = iteration(key1, PlainText);
+        return PlainText;
+    }
+
+    /**
+     *
+     * @param key
+     * @return decrypted cypher text after 1 iteration (128 bit = 16 byte of 1 block, cyphertext is multiply by 16 bytes)
+     */
+    private ArrayList<Byte[][]> iteration(Byte[][] key, ArrayList<Byte[][]> plain) {
+        ArrayList<Byte[][]> decrypted = new ArrayList<>();
+        for (Byte[][] block: plain) {
+            Byte[][] EncBlock = InvShiftColumns(Encryptor.AddRoundKey(block,key));
+            decrypted.add(EncBlock);
+        }
+        return decrypted;
+    }
     /**
      *
      * @param shiftBlock

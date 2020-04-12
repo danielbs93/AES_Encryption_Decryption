@@ -1,16 +1,44 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Encryptor {
 
     //Fields
-        private static Byte [][] key1;
-        private static Byte [][] key2;
-        private static Byte [][] key3;
-//        private static Byte [][] PlainText;
+        private Byte [][] key1;
+        private Byte [][] key2;
+        private Byte [][] key3;
+        private ArrayList<Byte [][]> PlainText;
 
-    public Encryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, Byte[][] message) {
+    public Encryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
         this.key1 = k1;
         this.key2 = k2;
         this.key3 = k3;
-//        this.PlainText = message;
+        this.PlainText = message;
+    }
+
+    public ArrayList<Byte[][]> encrypt() {
+        ArrayList<Byte[][]> CypherText = new ArrayList<>();
+        //first iteration
+        CypherText = iteration(key1, PlainText);
+        //second iteration
+        CypherText = iteration(key2, CypherText);
+        //third iteration
+        CypherText = iteration(key3, CypherText);
+        return CypherText;
+    }
+
+    /**
+     *
+     * @param key
+     * @return encrypted plain text after 1 iteration (128 bit = 16 byte of 1 block, plaintext is multiply by 16 bytes)
+     */
+    private ArrayList<Byte[][]> iteration(Byte[][] key, ArrayList<Byte[][]> plain) {
+        ArrayList<Byte[][]> encrypted = new ArrayList<>();
+        for (Byte[][] block: plain) {
+            Byte[][] EncBlock = AddRoundKey(ShiftColumns(block),key);
+            encrypted.add(EncBlock);
+        }
+        return encrypted;
     }
 
     /**
@@ -46,7 +74,7 @@ public class Encryptor {
      * @param key
      * @return
      */
-    private Byte[][] AddRoundKey(Byte[][] block, Byte[][]key){
+    public static Byte[][] AddRoundKey(Byte[][] block, Byte[][]key){
         Byte[][] blockXorKey = new Byte[4][4];
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)

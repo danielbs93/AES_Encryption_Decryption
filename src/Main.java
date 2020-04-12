@@ -2,6 +2,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
+
 public class Main {
 
     // Flags for encryption/decryption //
@@ -38,14 +39,17 @@ public class Main {
                 //Encryption
                 if (args[0].equals(Encrypt_Instruction)) {
                     readData(InputMassagePath,PlainText);
-                    Encryptor encryptor = new Encryptor();// TODO: passing parameters
-                    //TODO: encrypt method + saving to OutputMassagePath
+                    Encryptor encryptor = new Encryptor(Key1,Key2,Key3,PlainText);
+                    CypherText = encryptor.encrypt();
+                    writeData(OutputMassagePath,CypherText);
                 } else
                 //Decryption
                 if (args[0].equals(Decrypt_Instruction)) {
-                    readData(OutputMassagePath, CypherText);
-                    Decryptor decryptor = new Decryptor();// TODO: passing parameters
+                    readData(InputMassagePath, CypherText);
+                    Decryptor decryptor = new Decryptor(Key1,Key2,Key3,CypherText);
                     //TODO: decrypt method + saving to InputMassagePath
+                    PlainText = decryptor.decrypt();
+                    writeData(OutputMassagePath,PlainText);
                 }
             }
             else
@@ -69,6 +73,34 @@ public class Main {
     }
 
     /**
+     * Writing data to a new file
+     * @param outputMassagePath
+     * @param cypherText
+     */
+    private static void writeData(String outputMassagePath, ArrayList<Byte[][]> cypherText) {
+        File file = new File(outputMassagePath);
+        byte[] writeable = new byte[cypherText.size()*16];
+        int index = 0;
+        for (Byte[][] block: cypherText) {
+            for (int i = 0; i < block.length; i++) {
+                for (int j = 0; j < block[i].length; j++) {
+                    writeable[index] = (block[j][i]).byteValue();
+                    index++;
+                }
+            }
+        }
+        try {
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(writeable);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Creating the 3 keys according to the key_path.
      * Each key is in size of 128bit = 16 bytes
      * Storing them into the private fields Key1, Key2, Key3 mentioned in the beginning of this code section
@@ -81,15 +113,16 @@ public class Main {
             byte[] key1 = new byte[16];
             byte[] key2 = new byte[16];
             byte[] key3 = new byte[16];
+            int index = 16;
             for (int i = 0; i < 48; i++) {
                 if (i < 16){
                     key1[i] = massage[i];
                 }else
                     if (i > 15 && i < 32) {
-                        key2[i] = massage[i];
+                        key2[i-index] = massage[i];
                     }else
                         if (i > 31) {
-                            key3[i] = massage[i];
+                            key3[i-2*index] = massage[i];
                         }
             }
             buildMatrixData(key1,Key1);
@@ -124,7 +157,8 @@ public class Main {
             int numOfBlocks = massage.length/16;
             int index = 0;
             for (int i = 0; i < numOfBlocks; i++) {
-                plainText.set(i,new Byte[4][4]);
+                plainText.add(new Byte[4][4]);
+//                plainText.set(i,new Byte[4][4]);
                 byte[] block = new byte[16];
                 for (int j = 0; j < 16; j++) {
                     block[j] = massage[j+index];
