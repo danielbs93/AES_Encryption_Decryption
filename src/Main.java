@@ -47,7 +47,6 @@ public class Main {
                 if (args[0].equals(Decrypt_Instruction)) {
                     readData(InputMassagePath, CypherText);
                     Decryptor decryptor = new Decryptor(Key1,Key2,Key3,CypherText);
-                    //TODO: decrypt method + saving to InputMassagePath
                     PlainText = decryptor.decrypt();
                     writeData(OutputMassagePath,PlainText);
                 }
@@ -61,8 +60,10 @@ public class Main {
                 Key_Path = args[6];
                 readData(InputMassagePath,PlainText);
                 readData(OutputMassagePath,CypherText);
-                Breaker breaker = new Breaker();// TODO: passing parameters
+                Breaker breaker = new Breaker(PlainText,CypherText);
                 //TODO: break method + saving to Key_path
+                ArrayList<Byte[][]> key3 = breaker.breakEncryption();
+                writeData(Key_Path,key3);
             }
             else //illegal input
                 throw new Exception();

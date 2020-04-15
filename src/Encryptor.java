@@ -9,6 +9,9 @@ public class Encryptor {
         private Byte [][] key3;
         private ArrayList<Byte [][]> PlainText;
 
+    public Encryptor() {
+    }
+
     public Encryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
         this.key1 = k1;
         this.key2 = k2;
@@ -47,7 +50,7 @@ public class Encryptor {
      * @return block encrypted by shift columns
      * the first column shift up by 0 cell, the second by 1 cell ...
      */
-    private Byte[][] ShiftColumns(Byte[][] block){
+    public Byte[][] ShiftColumns(Byte[][] block){
         Byte[][] shiftBlock = new Byte[4][4];
         //column0
         for (int i = 0; i < 4; i++)
