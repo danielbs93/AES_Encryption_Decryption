@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Encryptor {
+public class AES_Encryptor implements IEncryptor {
 
     //Fields
         private Byte [][] key1;
@@ -9,10 +9,10 @@ public class Encryptor {
         private Byte [][] key3;
         private ArrayList<Byte [][]> PlainText;
 
-    public Encryptor() {
+    public AES_Encryptor() {
     }
 
-    public Encryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
+    public AES_Encryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
         this.key1 = k1;
         this.key2 = k2;
         this.key3 = k3;

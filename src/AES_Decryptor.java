@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Decryptor {
+public class AES_Decryptor  implements IDecryptor{
 
     //Fields
     private Byte [][] key1;
@@ -8,7 +8,7 @@ public class Decryptor {
     private Byte [][] key3;
     private ArrayList<Byte [][]> CypherText;
 
-    public Decryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
+    public AES_Decryptor(Byte [][] k1, Byte[][] k2, Byte[][] k3, ArrayList<Byte[][]> message) {
         this.key1 = k1;
         this.key2 = k2;
         this.key3 = k3;
@@ -35,7 +35,7 @@ public class Decryptor {
     private ArrayList<Byte[][]> iteration(Byte[][] key, ArrayList<Byte[][]> plain) {
         ArrayList<Byte[][]> decrypted = new ArrayList<>();
         for (Byte[][] block: plain) {
-            Byte[][] EncBlock = InvShiftColumns(Encryptor.AddRoundKey(block,key));
+            Byte[][] EncBlock = InvShiftColumns(AES_Encryptor.AddRoundKey(block,key));
             decrypted.add(EncBlock);
         }
         return decrypted;

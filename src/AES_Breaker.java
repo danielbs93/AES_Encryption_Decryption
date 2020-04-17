@@ -5,19 +5,19 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Breaker {
+public class AES_Breaker implements IBreaker {
 
     //Fields
     private ArrayList<Byte[][]> PlainText;
     private ArrayList<Byte[][]> CipherText;
     private ArrayList<Byte[][]> RandomKeys;
-    private Encryptor encryptor;
+    private AES_Encryptor encryptor;
 
-    public Breaker(ArrayList<Byte[][]> plainText, ArrayList<Byte[][]> cipherText) {
+    public AES_Breaker(ArrayList<Byte[][]> plainText, ArrayList<Byte[][]> cipherText) {
         this.PlainText = plainText;
         this.CipherText = cipherText;
         this.RandomKeys = new ArrayList<>();
-        encryptor = new Encryptor();
+        encryptor = new AES_Encryptor();
     }
 
     public ArrayList<Byte[][]> breakEncryption() {
@@ -55,7 +55,7 @@ public class Breaker {
     private ArrayList<Byte[][]> xorCiphers(ArrayList<Byte[][]> newCipherText, ArrayList<Byte[][]> cipherText) {
         ArrayList<Byte[][]> ans = new ArrayList<>();
         for (int i = 0; i < newCipherText.size(); i++) {
-            Byte[][] xor = Encryptor.AddRoundKey(newCipherText.get(i),CipherText.get(i));
+            Byte[][] xor = AES_Encryptor.AddRoundKey(newCipherText.get(i),CipherText.get(i));
             ans.add(xor);
         }
         return ans;

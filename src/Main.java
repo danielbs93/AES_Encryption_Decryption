@@ -39,14 +39,14 @@ public class Main {
                 //Encryption
                 if (args[0].equals(Encrypt_Instruction)) {
                     readData(InputMassagePath,PlainText);
-                    Encryptor encryptor = new Encryptor(Key1,Key2,Key3,PlainText);
+                    IEncryptor encryptor = new AES_Encryptor(Key1,Key2,Key3,PlainText);
                     CypherText = encryptor.encrypt();
                     writeData(OutputMassagePath,CypherText);
                 } else
                 //Decryption
                 if (args[0].equals(Decrypt_Instruction)) {
                     readData(InputMassagePath, CypherText);
-                    Decryptor decryptor = new Decryptor(Key1,Key2,Key3,CypherText);
+                    IDecryptor decryptor = new AES_Decryptor(Key1,Key2,Key3,CypherText);
                     PlainText = decryptor.decrypt();
                     writeData(OutputMassagePath,PlainText);
                 }
@@ -60,7 +60,7 @@ public class Main {
                 Key_Path = args[6];
                 readData(InputMassagePath,PlainText);
                 readData(OutputMassagePath,CypherText);
-                Breaker breaker = new Breaker(PlainText,CypherText);
+                AES_Breaker breaker = new AES_Breaker(PlainText,CypherText);
                 //TODO: break method + saving to Key_path
                 ArrayList<Byte[][]> key3 = breaker.breakEncryption();
                 writeData(Key_Path,key3);
