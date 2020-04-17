@@ -1,4 +1,5 @@
 import com.sun.deploy.util.ArrayUtil;
+import javafx.application.Platform;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -9,28 +10,48 @@ public class Breaker {
     //Fields
     private ArrayList<Byte[][]> PlainText;
     private ArrayList<Byte[][]> CipherText;
-    private ArrayList<Byte[][]> Keys;
+    private ArrayList<Byte[][]> RandomKeys;
     private Encryptor encryptor;
 
     public Breaker(ArrayList<Byte[][]> plainText, ArrayList<Byte[][]> cipherText) {
         this.PlainText = plainText;
         this.CipherText = cipherText;
-        this.Keys = new ArrayList<>();
+        this.RandomKeys = new ArrayList<>();
         encryptor = new Encryptor();
     }
 
     public ArrayList<Byte[][]> breakEncryption() {
-        generateTwoKeys();
+        generateTwoRandomKeys();
+        ArrayList<Byte[][]> FinalKeys = new ArrayList<>();
+        FinalKeys.add(RandomKeys.get(0));
+        FinalKeys.add(RandomKeys.get(1));
         Byte[][] Key3 = CipherText.get(0);
-        Keys.add(Key3);
-        this.encryptor = new Encryptor(Keys.get(0),Keys.get(1),Keys.get(2),PlainText);
-        ArrayList<Byte[][]> newCipherText = encryptor.encrypt();
-        ArrayList<Byte[][]> originalKey3 = xorCiphers(newCipherText,CipherText);
-        Keys.remove(2);
-        Keys.addAll(originalKey3);
-        return Keys;
+        RandomKeys.add(Key3);
+        ArrayList<Byte[][]> xorPlainText = PlainText;
+        xorPlainText = shiftColumnsThreeTimes(PlainText);
+        ArrayList<Byte[][]> originalKey3 = xorCiphers(xorPlainText,CipherText);
+        FinalKeys.addAll(originalKey3);
+        return FinalKeys;
     }
 
+    private ArrayList<Byte[][]> shiftColumnsThreeTimes(ArrayList<Byte[][]> plaintext) {
+        ArrayList<Byte[][]> result = plaintext;
+        for (int i = 0; i < 3; i++) {
+            ArrayList<Byte[][]> tempPlainText = new ArrayList<>();
+            for (Byte[][] block: result) {
+                tempPlainText.add(this.encryptor.ShiftColumns(block));
+            }
+            result = tempPlainText;
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param newCipherText
+     * @param cipherText
+     * @return array list of key while xor is activated between each Byte[]
+     */
     private ArrayList<Byte[][]> xorCiphers(ArrayList<Byte[][]> newCipherText, ArrayList<Byte[][]> cipherText) {
         ArrayList<Byte[][]> ans = new ArrayList<>();
         for (int i = 0; i < newCipherText.size(); i++) {
@@ -40,28 +61,27 @@ public class Breaker {
         return ans;
     }
 
-    private void generateTwoKeys() {
+    /**
+     * Generate 2 keys that will cancel each other when activating the aes3
+     */
+    private void generateTwoRandomKeys() {
         byte[][] Key1b = new byte[4][4];
         SecureRandom random = new SecureRandom();
-        byte bytes[] = new byte[16]; // 128 bits are converted to 16 bytes;
         for (byte[] row: Key1b) {
             random.nextBytes(row);
         }
-//        Key1[1][0] = (byte) 1;
-//        for (int i = 0; i < 4; i++) {
-//            for (int j = 0; j < 4; j++) {
-//                if (i != 1 && j != 0)
-//                    Key1[i][j] = (byte) 0;
-//            }
-//        }
         Byte[][] Key1 = new Byte[4][4];
+        Byte[][] Key2 = new Byte[4][4];
+
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                Key1[i][j] = Key1b[i][j];
+                    Key1[i][j] = 0;
+                    Key2[i][j] = 0;
             }
         }
-        Byte[][] Key2 = this.encryptor.ShiftColumns(Key1);
-        this.Keys.add(Key1);
-        this.Keys.add(Key2);
+        Key1[0][1] = 1;
+        Key2[3][1] = 1;// simulate shift columns
+        this.RandomKeys.add(Key1);
+        this.RandomKeys.add(Key2);
     }
 }

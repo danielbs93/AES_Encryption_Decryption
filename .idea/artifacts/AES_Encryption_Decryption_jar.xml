@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AES_Encryption_Decryption:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AES_Encryption_Decryption_jar</output-path>
+    <root id="archive" name="aes.jar">
+      <element id="module-output" name="AES_Encryption_Decryption" />
+      <element id="library" level="project" name="java" />
+    </root>
+  </artifact>
+</component>
